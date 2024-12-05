@@ -18,8 +18,6 @@ from flask import send_from_directory
 from flask import Flask
 
 app = Flask(__name__, static_folder="static")
-port = int(os.environ.get("PORT", 8000))
-    app.run(host="0.0.0.0", port=port)
 
 # Initialize CSRF protection
 csrf = CSRFProtect(app)
@@ -86,7 +84,14 @@ def signup():
             conn.close()
 
     return render_template("signup.html")
+    
+@app.route("/")
+def home():
+    return "The Toy Effect app is running!"
 
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))  # Use the PORT from the environment, default to 8000
+    app.run(host="0.0.0.0", port=port)
 
 @app.route("/login", methods=["GET", "POST"])
 @csrf.exempt
