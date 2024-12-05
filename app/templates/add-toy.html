@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Toy</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+        }
+        .form-container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="form-container">
+            <h2>Add New Toy</h2>
+            <form method="POST" enctype="multipart/form-data" id="addToyForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <!-- Photo -->
+                <div class="form-group">
+                    <label for="photo">Photo</label>
+                    <input type="file" class="form-control" id="photo" name="photo" accept="image/*" required>
+                </div>
+
+                <!-- Name -->
+                <div class="form-group">
+                    <label for="subject">Name</label>
+                    <input type="text" class="form-control" id="subject" name="subject" required>
+                </div>
+
+                <!-- Year -->
+                <div class="form-group">
+                    <label for="year">Year</label>
+                    <input type="number" class="form-control" id="year" name="year" required>
+                </div>
+
+                <!-- Category -->
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select class="form-control" id="category" name="category" required>
+                        <option value="" disabled selected>Select a category</option>
+                        {% for category in categories %}
+                        <option value="{{ category[0] }}">{{ category[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Subcategory -->
+                <div class="form-group">
+                    <label for="subcategory">Subcategory</label>
+                    <select class="form-control" id="subcategory" name="subcategory" required>
+                        <option value="" disabled selected>Select a subcategory</option>
+                    </select>
+                </div>
+
+                <!-- Type -->
+                <div class="form-group">
+                    <label for="type">Type</label>
+                    <select class="form-control" id="type" name="type" required>
+                        <option value="" disabled selected>Select a type</option>
+                    </select>
+                </div>
+
+                <!-- Manufacturer -->
+                <div class="form-group">
+                    <label for="manufacturers">Manufacturer</label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="manufacturers" 
+                        name="manufacturers" 
+                        placeholder="Start typing a manufacturer..." 
+                        autocomplete="off"
+                    >
+                    <div id="manufacturerSuggestions" class="list-group position-absolute" style="z-index: 1050;"></div>
+                </div>
+                
+
+                <!-- Additional Fields -->
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="universe">Universe</label>
+                    <input type="text" class="form-control" id="universe" name="universe">
+                </div>
+                <div class="form-group">
+                    <label for="character_accessories">Character Accessories</label>
+                    <input type="text" class="form-control" id="character_accessories" name="character_accessories">
+                </div>
+                <div class="form-group">
+                    <label for="material">Material</label>
+                    <input type="text" class="form-control" id="material" name="material">
+                </div>
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <input type="text" class="form-control" id="country" name="country">
+                </div>
+                <div class="form-group">
+                    <label for="item_condition">Condition</label>
+                    <input type="text" class="form-control" id="item_condition" name="item_condition">
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="is_complete" name="is_complete">
+                    <label class="form-check-label" for="is_complete">Complete</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="box" name="box">
+                    <label class="form-check-label" for="box">Box Included</label>
+                </div>
+                <div class="form-group">
+                    <label for="box_condition">Box Condition</label>
+                    <input type="text" class="form-control" id="box_condition" name="box_condition">
+                </div>
+                <div class="form-group">
+                    <label for="quantity">Quantity</label>
+                    <input type="number" class="form-control" id="quantity" name="quantity" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn btn-primary btn-block">Add Toy</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+const categorySelect = document.getElementById("category");
+const subcategorySelect = document.getElementById("subcategory");
+const typeSelect = document.getElementById("type");
+
+categorySelect.addEventListener("change", function () {
+    const categoryId = this.value;
+
+    // Clear subcategory and type options
+    subcategorySelect.innerHTML = '<option value="" disabled selected>Select a subcategory</option>';
+    typeSelect.innerHTML = '<option value="" disabled selected>Select a type</option>';
+
+    // Fetch subcategories
+    if (categoryId) {
+        fetch(`/get-subcategories/${categoryId}`)
+            .then(response => response.json())
+            .then(data => {
+                const uniqueSubcategories = new Set();
+                data.forEach(subcategory => {
+                    if (!uniqueSubcategories.has(subcategory[1])) {
+                        uniqueSubcategories.add(subcategory[1]);
+                        const option = document.createElement("option");
+                        option.value = subcategory[0];
+                        option.textContent = subcategory[1];
+                        subcategorySelect.appendChild(option);
+                    }
+                });
+            })
+            .catch(error => console.error("Error fetching subcategories:", error));
+    }
+});
+
+subcategorySelect.addEventListener("change", function () {
+    const subcategoryId = this.value;
+
+    // Clear type options
+    typeSelect.innerHTML = '<option value="" disabled selected>Select a type</option>';
+
+    // Fetch types
+    if (subcategoryId) {
+        fetch(`/get-types/${subcategoryId}`)
+            .then(response => response.json())
+            .then(data => {
+                const uniqueTypes = new Set();
+                data.forEach(type => {
+                    if (!uniqueTypes.has(type[1])) {
+                        uniqueTypes.add(type[1]);
+                        const option = document.createElement("option");
+                        option.value = type[0];
+                        option.textContent = type[1];
+                        typeSelect.appendChild(option);
+                    }
+                });
+            })
+            .catch(error => console.error("Error fetching types:", error));
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const manufacturerInput = document.getElementById("manufacturers");
+    const suggestionBox = document.getElementById("manufacturerSuggestions");
+
+    manufacturerInput.addEventListener("input", function () {
+        const query = manufacturerInput.value;
+
+        if (query.length < 2) {
+            suggestionBox.innerHTML = ""; // Clear suggestions if input is too short
+            return;
+        }
+
+        fetch(`/search-manufacturers?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                suggestionBox.innerHTML = ""; // Clear previous suggestions
+                if (data.length > 0) {
+                    data.forEach(manufacturer => {
+                        const suggestionItem = document.createElement("button");
+                        suggestionItem.classList.add("list-group-item", "list-group-item-action");
+                        suggestionItem.textContent = manufacturer;
+                        suggestionItem.addEventListener("click", function () {
+                            manufacturerInput.value = manufacturer; // Set input value
+                            suggestionBox.innerHTML = ""; // Clear suggestions
+                        });
+                        suggestionBox.appendChild(suggestionItem);
+                    });
+                } else {
+                    suggestionBox.innerHTML = '<div class="list-group-item">No results found</div>';
+                }
+            })
+            .catch(error => console.error("Error fetching manufacturers:", error));
+    });
+
+    // Hide suggestions when clicking outside
+    document.addEventListener("click", function (event) {
+        if (!manufacturerInput.contains(event.target) && !suggestionBox.contains(event.target)) {
+            suggestionBox.innerHTML = "";
+        }
+    });
+});
+    </script>
+    
+</body>
+</html>
