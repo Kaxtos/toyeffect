@@ -85,14 +85,6 @@ def signup():
 
     return render_template("signup.html")
     
-@app.route("/")
-def home():
-    return "The Toy Effect app is running!"
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))  # Use the PORT from the environment, default to 8000
-    app.run(host="0.0.0.0", port=port)
-
 @app.route("/login", methods=["GET", "POST"])
 @csrf.exempt
 def login():
@@ -433,4 +425,5 @@ def profile():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 8000))  # Use the PORT from the environment, default to 8000
+    app.run(host="0.0.0.0", port=port)
