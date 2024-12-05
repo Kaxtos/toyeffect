@@ -31,7 +31,6 @@ contourpy==1.1.0
 cycler==0.11.0
 cytoolz==0.12.3
 dataclassy==0.11.1
-datasets==3.1.0
 dill==0.3.8
 distro==1.9.0
 Django==4.2.4
@@ -44,16 +43,6 @@ einops-exts==0.0.4
 eip712==0.2.4
 email_validator==2.2.0
 et-xmlfile==1.1.0
-eth-account==0.10.0
-eth-brownie==1.20.6
-eth-event==1.2.5
-eth-hash==0.6.0
-eth-keyfile==0.7.0
-eth-keys==0.5.0
-eth-rlp==1.0.1
-eth-typing==3.5.2
-eth-utils==2.3.1
-eth_abi==5.0.0
 exceptiongroup==1.2.2
 execnet==2.0.2
 Faker==19.1.0
