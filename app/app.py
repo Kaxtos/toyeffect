@@ -15,7 +15,6 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Email, Length, EqualTo
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
-from flask import Flask
 
 app = Flask(__name__, static_folder="static")
 
@@ -427,3 +426,4 @@ def profile():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))  # Use the PORT from the environment, default to 8000
     app.run(host="0.0.0.0", port=port)
+
