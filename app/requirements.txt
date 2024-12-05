@@ -270,3 +270,4 @@ WTForms==3.2.1
 xxhash==3.5.0
 yarl==1.9.4
 zipp==3.17.0
+waitress
