@@ -18,7 +18,8 @@ from flask import send_from_directory
 from flask import Flask
 
 app = Flask(__name__, static_folder="static")
-app.secret_key = "your_secret_key"
+port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port)
 
 # Initialize CSRF protection
 csrf = CSRFProtect(app)
